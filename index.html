@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      .main-content {
+        display: flex;
+        justify-content: center;
+        border: 2px solid skyblue;
+      }
+
+      .main-content__node {
+        flex: 1;
+        text-align: center;
+        min-height: 20px;
+        padding: 5px;
+        font-size: 20px;
+      }
+
+      #resolve-content {
+        color: green;
+      }
+
+      #reject-content {
+        color: red;
+      }
+    </style>
+    <script crossorigin type="module">
+      import { CustomPromise } from './custom-promise.js';
+      import { HttpPromise } from './http-promise.js';
+
+      const addToResolveContent = (value) => {
+        const resolveContent = document.querySelector('#resolve-content');
+        resolveContent.innerHTML = `${resolveContent.innerHTML}<li>${value}</li>`;
+      }
+
+      const addToRejectContent = (error) => {
+        const rejectContent = document.querySelector('#reject-content');
+        rejectContent.innerHTML = `${rejectContent.innerHTML}<li>${error}</li>`;
+      }
+
+      const test = new CustomPromise((resolve, reject) => {
+        setTimeout(() => resolve("Testing Some Promise"), 2000);
+      });
+
+      test.then(addToResolveContent)
+
+      setTimeout(() => {
+        const httpRequest = new HttpPromise('GET', "https://jsonplaceholder.typicode.com/posts/1")
+        httpRequest.then(response => JSON.parse(response), addToRejectContent)
+                   .then((response) => addToResolveContent(response.title), addToRejectContent)
+      }, 2000)
+    </script>
+  </head>
+  <body>
+    <div class="main-content">
+      <ul class="main-content__node" id="resolve-content">
+
+      </ul>
+
+      <ul class="main-content__node" id="reject-content">
+
+      </ul>
+
+    </div>
+
+  </body>
+</html>
